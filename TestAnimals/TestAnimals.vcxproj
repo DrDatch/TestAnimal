@@ -91,7 +91,10 @@
     <Text Include="7.txt" />
     <Text Include="8.txt" />
     <Text Include="9.txt" />
-    <Text Include="output.txt" />
+    <Text Include="out.0.txt" />
+    <Text Include="out.1.txt" />
+    <Text Include="out.2.txt" />
+    <Text Include="out.3.txt" />
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>

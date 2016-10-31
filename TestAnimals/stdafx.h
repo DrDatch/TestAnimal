@@ -13,6 +13,7 @@
 #include <fstream>
 #include <queue>
 #include <math.h>
+#include <string>
 
 #include "Animal.h"
 #include "Matrix.h"

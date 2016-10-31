@@ -8,7 +8,7 @@ Matrix::Matrix()
 }
 
 
-int Matrix::Read(char* filename)
+int Matrix::Read(std::string filename)
 {
 	n = 0;// For out file clearance if something goes wrong
 	ifstream anfile("animals");
@@ -126,7 +126,7 @@ int Matrix::Read(char* filename)
 	return 0;
 }
 
-int Matrix::Write(char* filename)
+int Matrix::Write(std::string filename)
 {
 	ofstream outfile(filename, ios_base::trunc);
 	int* test;
@@ -181,6 +181,9 @@ int* Matrix::getNames(){
 }
 int Matrix::getN(){
 	return n;
+}
+int* Matrix::getWay(){
+	return way;
 }
 Matrix::~Matrix()
 {

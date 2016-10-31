@@ -20,9 +20,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="output.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
     <Text Include="ReadMe.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
@@ -54,6 +51,18 @@
       <Filter>Файлы ресурсов</Filter>
     </Text>
     <Text Include="9.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="out.0.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="out.1.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="out.2.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="out.3.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
   </ItemGroup>

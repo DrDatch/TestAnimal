@@ -11,12 +11,13 @@ private:
 	int* way = 0;
 public:
 	Matrix();
-	int Read(char* file);
-	int Write(char* file);
+	int Read(std::string file);
+	int Write(std::string file);
 	int findWay();
 	int** getArr();
 	int* getNames();
 	int getN();
+	int* getWay();
 	~Matrix();
 };
 

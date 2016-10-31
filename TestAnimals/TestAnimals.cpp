@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 
-int test(char* filename, int errexp, int** inarr = 0, int* innames = 0, int inn = 0);
+int test(std::string filename, int errexp, int** inarr = 0, int* innames = 0, int inn = 0);
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -21,19 +21,23 @@ int _tmain(int argc, _TCHAR* argv[])
 	return 0;
 }
 
-int test(char* filename, int errexp, int** inarr, int* innames, int inn){
+int test(std::string filename, int errexp, int** inarr, int* innames, int inn){
 	Matrix mat;
-	int ret = 0;
+	int ret = 1;
 	int err = mat.Read(filename);
+	int n;
+	std::string outname = "out." + filename;
+	
+
 	if (err == errexp){
-		ret = 1;//Correct
+		ret = 0;//Correct
 	}
 	if (err == errexp && err == 0){
 		int** arr = mat.getArr();
 		int* names = mat.getNames();
 		int** tarr;
 		int* tnames;
-		int n = mat.getN();
+		n = mat.getN();
 		if (n == 3){
 			tarr = new int*[n];
 			for (int i = 0; i < n; i++){
@@ -47,34 +51,57 @@ int test(char* filename, int errexp, int** inarr, int* innames, int inn){
 			for (int i = 0; i < n; i++){
 				for (int j = 0; j < n; j++){
 					if (tarr[i][j] != arr[i][j]){
-						ret = 0;//Uncorrect
+						ret = 1;//Uncorrect in
 						break;
 					}
 				}
 				if (tnames[i] != names[i]){
-					ret = 0;//Uncorrect
+					ret = 1;//Uncorrect in
 					break;
 				}
 			}
 		}
 		else{
 			if (inarr != 0 && innames != 0 && inn != 0){
+				n = inn;
 				for (int i = 0; i < inn; i++){
 					for (int j = 0; j < inn; j++){
 						if (inarr[i][j] != arr[i][j]){
-							ret = 0;//Uncorrect
+							ret = 1;//Uncorrect in
 							break;
 						}
 					}
 					if (innames[i] != names[i]){
-						ret = 0;//Uncorrect
+						ret = 1;//Uncorrect in
 						break;
 					}
 				}
 			}
 		}
 	}
-	if (ret == 1) cout << filename << " - All right!\n";
-	if (ret != 1) cout << filename << " - Uncorrect!\n";
+	if (err == 0 && ret == 0){
+		if (mat.findWay() && mat.Write(outname)){
+			int* test;
+			int* way;
+			
+			
+			way = mat.getWay();
+			test = new int[n];
+			for (int i = 0; i < n; i++){
+				test[i] = 0;
+			}
+			for (int i = 0; i < n; i++){
+				test[way[i]]++;
+				if (test[way[i]]>1){
+					ret = 2;// Uncorrect out
+					break;
+				}
+			}
+		}
+		else ret = 2;// Uncorrect out
+	}
+	if (ret == 0) cout << filename << " - All right!\n";
+	if (ret == 1) cout << filename << " - Uncorrect in!\n";
+	if (ret == 2) cout << filename << " - Uncorrect out!\n";
 	return ret;//Uncorrect
 }
