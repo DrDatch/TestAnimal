@@ -8,7 +8,7 @@ Matrix::Matrix()
 }
 
 
-int Matrix::Read(std::string filename)
+int Matrix::Read(string filename)
 {
 	n = 0;// For out file clearance if something goes wrong
 	ifstream anfile("animals");
@@ -34,7 +34,7 @@ int Matrix::Read(std::string filename)
 			return 2;//Animals is not 3 params for each
 		}
 		animals = new Animal[annum];
-		double a=-1, b=-1, c=-1;
+		double a = -1, b = -1, c = -1;
 		for (int i = 0; i < annum; i++){
 			a = tmp.front();
 			tmp.pop();
@@ -61,7 +61,7 @@ int Matrix::Read(std::string filename)
 		infile.seekg(0, std::ios::end);
 		size = infile.tellg();
 		//cout << "Size of file = " << size << "\n";
-		
+
 		queue<double> tmp;
 		double i;
 		infile.clear();
@@ -75,7 +75,7 @@ int Matrix::Read(std::string filename)
 		}
 		if (count > size) return 4;//Input is really wrong
 		int strings = 1;//Strings after matrix
-		double nd = (sqrt((double)strings*(double)strings+4*(double)count) - (double)strings) / 2.0;
+		double nd = (sqrt((double)strings*(double)strings + 4 * (double)count) - (double)strings) / 2.0;
 		n = (int)nd;
 
 
@@ -88,54 +88,95 @@ int Matrix::Read(std::string filename)
 		arr = new int*[n];
 		names = new int[n];
 		double cur;
-		for (int i = 0; i < n + strings; i++) arr[i] = new int[n];
+		for (int i = 0; i < n; i++) arr[i] = new int[n];
 		for (int i = 0; i < n + strings; i++){
 			for (int j = 0; j < n; j++){
 				cur = 0;
 				cur = tmp.front();
 				if (cur < 0){
 					n = 0;// For out file clearance if something goes wrong
-					return 6;//Something is less then 0
+					return 6;//Something is less then 0 or there is space in the end
 				}
 
 				if (cur == 0 && i < n && i != j){
 					n = 0;// For out file clearance if something goes wrong
 					return 7;//The way length is 0 between two animals
 				}
-				else arr[i][j] = (int)cur;
 
 				if (i == j && cur != 0){
 					n = 0;// For out file clearance if something goes wrong
 					return 8;//The way length is not 0 on diagonal
 				}
-				else arr[i][j] = (int)cur;
+				else{
+					if (i < n){//"if" for to be in matrix of n*n
+						if (i != j)	arr[i][j] = (int)cur;
+						else arr[i][j] = inf;
+					}
+				}
 
 				if (i == n && (cur < 0 || cur >= annum)){
 					n = 0;// For out file clearance if something goes wrong
 					return 9;//Number of animal in namelist is less then 0 or bigger then animals in "animals" file
 				}
-				else names[j] = (int)cur;
-				
+				else{
+					if (i == n) names[j] = (int)cur;
+				}
+
 				//cout << cur << " ";
 				tmp.pop();
 			}
 			//cout << "\n";
 		}
 	}
+	pway = new PWay*[n];
+	sn = n;//Start n
+	sarr = new int*[n];
+	snames = new int[n];
+
+	for (int i = 0; i < n; i++){
+		pway[i] = new PWay[n];
+		sarr[i] = new int[n];
+		for (int j = 0; j < n; j++){
+			sarr[i][j] = arr[i][j];
+			//cout << arr[i][j] << "\t";
+			pway[i][j].start = to_string(i);
+			pway[i][j].fin = to_string(j);
+			if (arr[i][j] != arr[j][i]){
+				n = 0;// For out file clearance if something goes wrong
+				return 10;
+			}
+		}
+		//cout << "\n";
+	}
+	for (int i = 0; i < n; i++){
+		snames[i] = names[i];
+		//cout << names[i] << "\t";
+	}
+	//cout << "\n";
+	//cout << "\n";
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < n; j++){
+			//cout << pway[i][j].start << pway[i][j].mid << pway[i][j].fin << "\t";
+		}
+		//cout << "\n";
+	}
+	//cout << "\n";
 	infile.close();
 	return 0;
 }
 
-int Matrix::Write(std::string filename)
+int Matrix::Write(string filename)
 {
 	ofstream outfile(filename, ios_base::trunc);
 	int* test;
-	if (n > 0 && way != 0){//If n==0 then out file will be just cleared
-		test = new int[n];
-		for (int i = 0; i < n; i++){
+
+	if (waylen > 0 && way != 0){//If n==0 then out file will be just cleared
+		test = new int[annum];
+		for (int i = 0; i < annum; i++){
 			test[i] = 0;
 		}
-		for (int i = 0; i < n; i++){
+		for (int i = 0; i < waylen; i++){
+			way[i];
 			test[way[i]]++;
 			if (test[way[i]]>1){
 				outfile.close();
@@ -144,8 +185,10 @@ int Matrix::Write(std::string filename)
 		}
 		if (outfile.is_open()){
 			outfile << way[0];
-			for (int i = 1; i < n; i++){
+			//cout << way[0];
+			for (int i = 1; i < waylen; i++){
 				outfile << " " << way[i];
+				//cout << " " << way[i];
 			}
 		}
 		outfile.close();
@@ -156,22 +199,214 @@ int Matrix::Write(std::string filename)
 }
 
 int Matrix::findWay(){
+	findPWay();
+	int m = 1 << n;//m=2^n
+	int temp;
+	int** t;
+
 	way = new int[n];
-	for (int i = 0; i < n; i++){
-		way[i] = i;
+	way[0] = 0; //Start with 0
+	t = new int*[m];
+	for (int i = 0; i < m; i++){
+		t[i] = new int[n];
 	}
-	int bub=0;
-	for (int i = 0; i < n-1; i++){
-		for (int j = i+1; j < n; j++){
-			if (names[way[i]]>names[way[j]]){
-				bub = way[i];
-				way[i] = way[j];
-				way[j] = bub;
+
+
+	t[1][0] = 0;
+	for (int i = 1; i < m; i += 2){
+		for (int j = (i == 1) ? 1 : 0; j<n; j++){
+			t[i][j] = inf;
+			if (j > 0 && accept(j, i)){
+				temp = i ^ (1 << j);
+				for (int k = 0; k < n; k++){
+					if (accept(k, i) && arr[k][j]>0){
+						t[i][j] = min(t[i][j], t[temp][k] + arr[k][j]);
+					}
+				}
 			}
 		}
 	}
-	//way[0] = 0;//Do uncorrect output
-	return 1;//Way found
+
+	int last;
+	int k = n;
+	int ans = inf;
+	int minh;//Minimum Hamilton cicle
+
+	for (int i = 1; i < n; ++i){
+		if (arr[i][0]>0){
+			if (ans > t[m - 1][i] + arr[i][0]){
+				ans = t[m - 1][i] + arr[i][0];
+				last = i; way[k] = i; minh = t[m - 1][i];
+			}
+		}
+	}
+
+	int line;
+	int i = m;
+	while (i > 1){
+		line = i - pow(2, last);
+		minh = t[line - 1][last];
+		for (int j = 0; j < n; j++){
+			if (t[i - 1][last] == t[line - 1][j] + arr[j][last] && t[i - 1][last] < minh) {
+				minh = t[i - 1][last];
+				way[k - 1] = last;
+				last = j;
+			}
+
+		}
+		i = line;
+		k--;
+
+	}
+	//cout << "0 ";
+	string out = pway[0][0].start;
+	for (int i = 1; i < n; i++){
+		out += pway[way[i - 1]][way[i]].mid + pway[way[i - 1]][way[i]].fin;
+	}
+	//cout << out;
+
+	std::vector<int> tmp;
+	int n;
+	stringstream stream(out);
+	while (stream >> n){
+		tmp.push_back(n);
+	}
+	waylen = tmp.size();
+	for (int i = 0; i < waylen; i++)
+		way[i] = tmp[i];
+
+	if (ans == inf) return 0;
+	else{
+		tryCatch();
+		return 1;//Way found
+	}
+
+}
+
+int Matrix::findPWay(){
+	for (int i = 0; i < n && n > 1; i++){
+		if (animals[names[i]].getHave()){
+			if (rebuild(i)) i--;
+		}
+	}
+	return 1;
+}
+int Matrix::rebuild(int del){
+	int reb = 1;
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < n; j++){
+			int l = pway[i][j].lastel;
+			int f = stoi(pway[i][j].fin);
+			if ((double)(arr[i][del] + arr[del][j]) <= 1.1 * (double)arr[i][j] && i != j && pway[i][j].mid == " " ||
+				pway[i][j].mid != " " && (double)(arr[i][j] - sarr[l][f] + sarr[l][del] + sarr[del][f]) <= 1.1 * (double)arr[i][j] && i != j){
+				arr[i][j] = arr[i][del] + arr[del][j];
+				pway[i][j].mid += pway[i][del].fin + " ";
+				pway[i][j].points += animals[del].getPoints();
+				pway[i][j].lastel = stoi(pway[i][del].fin);
+			}
+		}
+	}
+	/*
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < n; j++){
+			cout << arr[i][j] << "\t";
+		}
+		cout << "\n";
+	}
+	cout << "\n";
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < n; j++){
+			cout << pway[i][j].start << pway[i][j].mid << pway[i][j].fin << "\t";
+		}
+		cout << "\n";
+	}
+	cout << "\n";
+	*/
+	for (int i = 0; i < n - 1; i++){
+		for (int j = 0; j < n - 1; j++){
+			if (i >= del && j < del){
+				arr[i][j] = arr[i + 1][j];
+				pway[i][j] = pway[i + 1][j];
+			}
+			if (i < del && j >= del){
+				arr[i][j] = arr[i][j + 1];
+				pway[i][j] = pway[i][j + 1];
+			}
+			if (i >= del && j >= del){
+				arr[i][j] = arr[i + 1][j + 1];
+				pway[i][j] = pway[i + 1][j + 1];
+			}
+		}
+		if (i >= del){
+			names[i] = names[i + 1];
+		}
+	}
+	n--;
+	/*for (int i = 0; i < n; i++){
+		for (int j = 0; j < n; j++){
+			cout << arr[i][j] << "\t";
+		}
+		cout << "\n";
+	}
+	cout << "\n";
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < n; j++){
+			cout << pway[i][j].start << pway[i][j].mid << pway[i][j].fin << "\t";
+		}
+		cout << "\n";
+	}
+	cout << "\n";*/
+	return 1;
+}
+int Matrix::tryCatch(){
+	srand(time(0));
+	vector<int> tmp;
+
+
+
+	for (int i = 0; i < waylen; i++){
+		int p = rand() * 100 / RAND_MAX;
+		if (animals[snames[way[i]]].getHave()){
+			if (i > 0 && i < waylen - 1){
+				if ((double)(sarr[way[i - 1]][way[i]] + sarr[way[i]][way[i + 1]]) <= 1.1 * (double)sarr[way[i - 1]][way[i + 1]]){
+					tmp.push_back(way[i]);
+					if (p < animals[snames[way[i]]].getChance() * 100){
+						points += animals[snames[way[i]]].getPoints();
+					}
+				}
+			}
+			else{
+				if (i == 0){
+					tmp.push_back(way[i]);
+					points += animals[snames[way[i]]].getPoints();
+				}
+				else{
+					if ((double)(sarr[way[i - 1]][way[i]] + sarr[way[i]][way[0]]) <= 1.1 * (double)sarr[way[i - 1]][way[0]]){
+						tmp.push_back(way[i]);
+						if (p < animals[snames[way[i]]].getChance() * 100){
+							points += animals[snames[way[i]]].getPoints();
+						}
+					}
+				}
+			}
+		}
+		else{
+			tmp.push_back(way[i]);
+			if (p < animals[snames[way[i]]].getChance() * 100){
+				animals[snames[way[i]]].setHave(true);
+			}
+		}
+	}
+
+	way = new int[waylen];
+	waylen = tmp.size();
+	for (int i = 0; i < waylen; i++)
+		way[i] = tmp[i];
+
+	return 1;
+}
+bool Matrix::accept(int n, int x){
+	return (x & (1 << n)) != 0;
 }
 int** Matrix::getArr(){
 	return arr;
@@ -182,9 +417,13 @@ int* Matrix::getNames(){
 int Matrix::getN(){
 	return n;
 }
+int Matrix::getInf(){
+	return inf;
+}
 int* Matrix::getWay(){
 	return way;
 }
+
 Matrix::~Matrix()
 {
 }

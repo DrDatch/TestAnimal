@@ -65,6 +65,12 @@
     <Text Include="out.3.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
+    <Text Include="10.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="out.10.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animal.cpp">

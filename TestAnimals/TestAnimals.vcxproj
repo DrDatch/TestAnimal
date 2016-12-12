@@ -83,6 +83,7 @@
   <ItemGroup>
     <Text Include="0.txt" />
     <Text Include="1.txt" />
+    <Text Include="10.txt" />
     <Text Include="2.txt" />
     <Text Include="3.txt" />
     <Text Include="4.txt" />
@@ -93,6 +94,7 @@
     <Text Include="9.txt" />
     <Text Include="out.0.txt" />
     <Text Include="out.1.txt" />
+    <Text Include="out.10.txt" />
     <Text Include="out.2.txt" />
     <Text Include="out.3.txt" />
     <Text Include="ReadMe.txt" />
